@@ -13,12 +13,12 @@ const niveles=[
 {n:'EL MURO',tips:[[70,300,'↑ MIENTRAS LANZAS ESTIRA EL ARCO'],[470,170,'LAS POLILLAS SE COMEN TU HILO']],m:'21.m/27.C/14.18#*3/..P11.18#/32#*4'},
 {n:'LA BAJADA',tips:[[40,200,'MANTÉN ↓ MIENTRAS LANZAS PARA QUE BAJE']],m:'24.8#*9/..P21.8#/10#14.8#*3/10#8.r..C..8#/10#8.5#.8#/10#8~5#~8#*3'},
 {n:'TODO JUNTO',tips:[[70,300,'SALTA DESDE EL HILO · →→ PARA DASH']],m:'42.m//50.C/32.24#*3/..P23.r5.24#/12#9.35#/12#9~35#*3'},
-{n:'LA ISLA',tips:[[70,300,'RECARGA ESTAMBRE EN LA ISLA']],m:'..P22.r26.C/10#13.5#12.16#/10#13~5#12~16#*3'},
-{n:'LA RATONERA',tips:[[70,300,'LANZA HILO AL SUELO: LOS RATONES SE ENREDAN']],m:'..P16.r13.r13.r3.C/10#4.10#4.10#4.12#/10#4~10#4~10#4~12#*3'},
-{n:'LAS POLILLAS',tips:[[70,250,'ENREDA LAS POLILLAS ANTES DE CRUZAR']],m:'14.m5.m/..P33.C/10#15.16#/10#15~16#*3'},
-{n:'EL POZO',tips:[[290,110,'BAJA CON ↓ DE REPISA EN REPISA']],m:'..P/8#*4/8#8.5#*3/8#8.5#10.r15.C/8#8.5#8.5#7.10#/8#8~5#8~5#7~10#*3'},
-{n:'LOS ESCALONES',tips:[[70,300,'RAMPA CON ↑ Y SALTA DESDE LA PUNTA']],m:'36.C/26.15#/20.m5.15#/26.15#*2/14.27#*3/..P11.27#/41#*4'},
-{n:'LA CAJA DE LA ABUELA',tips:[[70,300,'¡LA ÚLTIMA CAJA!']],m:'38.m//48.C/31.20#*3/..P22.r5.20#/10#13.5#3.20#/10#13~5#3~20#*3'}];
+{n:'LAS ISLAS',tips:[[60,280,'DOSIFICA ↓ PARA CAER EN ISLAS CHICAS']],m:'29.m/..P35.r7.C/8#6.3#6.3#7.18#/8#6~3#6~3#7~18#*3'},
+{n:'LA RATONERA',tips:[[70,300,'CUATRO RATONES, TRES CHARCOS']],m:'..P14.r5.r10.r4.r17.C/10#6.10#6.10#6.12#/10#6~10#6~10#6~12#*3'},
+{n:'LAS POLILLAS',tips:[[70,250,'UN POCO DE ↑ PARA LLEGAR MÁS LEJOS']],m:'13.m6.m6.m/..P35.C/10#17.14#/10#17~14#*3'},
+{n:'EL POZO',tips:[[230,60,'TRES BAJADAS, NINGUNA RED']],m:'..P/6#*4/6#8.5#*3/6#8.5#10.r/6#8.5#8.5#*3/6#8.5#8.5#12.r2.C/6#8.5#8.5#8.11#/6#8~5#8~5#8~11#*2'},
+{n:'LOS ESCALONES',tips:[[40,330,'TRES MUROS Y DOS POLILLAS']],m:'41.C/34.11#/29.m4.11#/34.11#*2/24.21#/19.m4.21#/24.21#*2/14.31#*3/..P11.31#/10#4.31#/10#4~31#*3'},
+{n:'LA CASA DE LA ABUELA',tips:[[40,280,'¡LLEVA EL HILO A CASA!']],m:'30.m//36.r7.C/22.25#*3/..P19.25#/8#6.3#5.25#/8#6~3#5~25#*3'}];
 const dec=s=>{const r=[];s.split('/').forEach(f=>{const[a,n]=f.split('*'),row=a.replace(/(\d+)(\D)/g,(_,k,ch)=>ch.repeat(k));for(let i=0;i<(n||1);i++)r.push(row)});while(r.length<18)r.unshift('');return r};
 niveles.forEach(l=>l.m=dec(l.m));
 let nivel,j,cam=0,estado='menu',t=0,muertes=0,lines=[],trazo=null,bloq=0,tinta=100,reloj=0,shake=0,parts=[],nNivel=0,
@@ -275,7 +275,7 @@ txt(fmt(reloj),W-24,42,28,'right');txt('CAÍDAS  '+muertes,W-24,64,13,'right','#
 const by=tactil?72:H-30;x.save();x.translate(36,by);ovillo(5+11*tinta/100,t*.5);x.restore();
 x.fillStyle='rgba(10,18,40,.55)';x.beginPath();x.roundRect(58,by-7,170,14,7);x.fill();
 x.fillStyle=tinta<20?'#ff5a5a':LANA[1];x.beginPath();x.roundRect(58,by-7,Math.max(14,170*tinta/100),14,7);x.fill()}
-const HISTORIA=['La abuela dejó la ventana abierta.','El hilo de la abuela rodó hasta el fin del mundo.','Eres Hilacho, un gato pequeño,','pero tu hilo llega lejos.'];
+const HISTORIA=['La abuela tejía un huipil para la feria del pueblo.','Una noche, las polillas lo deshicieron hilo por hilo.','Hilacho despertó. Le tocaba a él.','Teje puentes con el hilo y llévalo de vuelta a casa.'];
 const gatoEn=(px,py,sc,dir=1)=>{const jj=j;j={dir,incl:0,suelo:1,vy:0,vx:0,paso:0};x.save();x.translate(px,py);x.scale(sc,sc);gato(0,0);x.restore();j=jj};
 function escenaIntro(){const tI=t-tIntro,s=Math.min(3,Math.floor(tI/3.4)),u=tI-s*3.4,cx=W/2;
 if(s<3){// cuarto con ventana al atardecer
@@ -286,6 +286,7 @@ x.fillStyle='#fff3e0';[[292,62,376,10],[292,342,376,10],[292,62,10,290],[658,62,
 x.fillStyle='#7a4a2a';x.fillRect(250,352,460,16);x.fillStyle='#5a3418';x.fillRect(250,368,460,5);
 const pos=q=>q<1.2?[560+q*100,342]:[680+(q-1.2)*80,342+(q-1.2)**2*520],uu=s==0?0:s==1?u:3;
 if(s>0){const p=[];for(let q=0;q<=uu;q+=.04)p.push(pos(q));p.push(pos(uu));hilo({p:p.map(([a,b])=>[a,b+8]),a:1,v:9,off:0,s:5})}
+if(s==1){const ee=enem;enem=[0,1].map(q=>({t:'m',x:360+q*150+u*60,y:110+q*50+Math.sin(t*3+q)*12,w:26,h:20,ph:q}));dibEnem();enem=ee}
 if(s<2){const[a,b]=pos(uu);if(b<H){x.save();x.translate(a,b);ovillo(10,a/10);x.restore()}}
 if(s<2){gatoEn(400,352,2);x.globalAlpha=.8;for(let q=0;q<3;q++)txt('z',430+q*14,320-q*16-(t*20%16),12+q*4,'center','#fff',0,0);x.globalAlpha=1}
 else{gatoEn(cx,352-(u>.8?Math.abs(Math.sin(u*6))*22:0),3.2);if(u>.4)txt('!',cx+52,226,40,'center','#ffd27a');if(u>1.2){x.save();x.translate(cx,130);const z=Math.min(1,(u-1.2)*4);x.scale(z,z);titulo(0,0,60);x.restore()}}}
