@@ -25,3 +25,8 @@ a la caja lo más rápido posible.
 - Un solo `index.html`, menos de 32 KB sin comprimir.
 - Canvas + JavaScript vanilla: sin librerías, frameworks ni motores.
 - Cero assets: todo se dibuja y suena con código (la música de marimba se sintetiza con Web Audio).
+
+## Estructura
+
+- `src/index.html`: código fuente legible (con comentarios).
+- `index.html`: build que se publica (sin comentarios ni sangrías), generado con `python3 build.py`.
