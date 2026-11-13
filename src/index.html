@@ -249,7 +249,7 @@ x.fillStyle='rgba(255,170,110,.13)';x.beginPath();x.moveTo(cx+w*.1,b-h);x.lineTo
 // Agua, Acatenango y Fuego (con humo)
 function volcanes(){rep(o=>{cono(o+190,270,235,'#3b3f78');cono(o+720,230,255,'#363a74');cono(o+575,170,205,'#41447e');
 for(let i=0;i<6;i++){const q=(t*.12+i/6)%1;x.fillStyle=`rgba(230,215,225,${(1-q)*.5})`;x.beginPath();x.arc(o+575+q*50,265-q*95,7+q*24,0,7);x.fill()}},.08,1100)}
-const tema=()=>nivel.menu?1:nNivel%3,CASA=['#c98a3a','#b5523f','#3f6f98','#c9b48a','#5e8e5c'];
+const tema=()=>nNivel%3,CASA=['#c98a3a','#b5523f','#3f6f98','#c9b48a','#5e8e5c'];
 // la capa media va semitransparente para quedar al fondo
 function capaMedia(){const k=.3,th=tema();x.globalAlpha=.72;
 if(th==0){// campo: cerros con cipreses
@@ -273,7 +273,7 @@ x.fillStyle='rgba(255,220,150,.35)';x.beginPath();x.arc(W*.72-cam*.05,H*.6,72,0,
 volcanes();
 nubes.forEach(n=>{const px=((n.x-cam*.3+t*8)%(W+400)+W+400)%(W+400)-200;
 [['#e9a99a',8],['#ffe6d8',0]].forEach(([co,o])=>{x.fillStyle=co;x.beginPath();
-BOLAS.forEach(([a,b,r])=>{x.moveTo(px+a*n.s+r*n.s,n.y+b*n.s+o);x.arc(px+a*n.s,n.y+b*n.s+o,r*n.s,0,7)});x.fill()})});capaMedia()}
+BOLAS.forEach(([a,b,r])=>{x.moveTo(px+a*n.s+r*n.s,n.y+b*n.s+o);x.arc(px+a*n.s,n.y+b*n.s+o,r*n.s,0,7)});x.fill()})});nivel.menu||capaMedia()}
 
 function gato(px,py){const mov=j.suelo&&Math.abs(j.vx)>10,s=Math.sin(j.paso)*3;
 x.save();x.translate(px,py);x.scale(j.dir,1);if(j.incl)x.rotate(j.incl*j.dir);else if(!j.suelo)x.rotate(Math.max(-.3,Math.min(.3,j.vy/1500)));
