@@ -1,5 +1,5 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Hilacho</title>
-<style>html,body{margin:0;height:100%;background:#0a1428;overflow:hidden}canvas{position:absolute}</style></head><body><canvas id="c"></canvas><script>
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Hilacho</title>
+<style>html,body{margin:0;height:100%;background:#0a1428;overflow:hidden}canvas{position:absolute;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}</style></head><body><canvas id="c"></canvas><script>
 const W=960,H=540,T=30,DT=1/60,c=document.getElementById('c'),x=c.getContext('2d'),F='system-ui,-apple-system,"Segoe UI",sans-serif';
 // física (px/s)
 const G=1900,VMAX=260,ACC=2400,ACC_AIRE=1500,FRIC=2600,SALTO=640,COYOTE=.1,BUFFER=.1;
@@ -109,8 +109,40 @@ if(estado=='como'&&(ok||esc)){estado=volver;sel=0}
 else if(estado=='intro'&&ok){reloj=muertes=0;cargar(0);estado='jugando'}
 else if(estado=='fin'&&ok)irMenu()};
 onkeyup=e=>k[e.code]=0;
+
+// ---------- táctil: botones virtuales que simulan teclas ----------
+let tactil='ontouchstart' in window;const dedos={};
+const BOT=[{id:'izq',x:78,y:458,r:44,c:'ArrowLeft'},{id:'der',x:188,y:458,r:44,c:'ArrowRight'},
+{id:'hilo',x:W-200,y:462,r:48,c:'ShiftLeft'},{id:'sal',x:W-82,y:440,r:52,c:'Space'},{id:'pau',x:W/2,y:34,r:24,c:'Escape'}];
+const vertical=()=>tactil&&innerHeight>innerWidth;
+const pulsa=cd=>onkeydown({code:cd,repeat:0,preventDefault(){}}),suelta=cd=>onkeyup({code:cd});
+function logico(tq){const b=c.getBoundingClientRect();return[(tq.clientX-b.left)/b.width*W,(tq.clientY-b.top)/b.height*H]}
+const botEn=(px,py)=>BOT.find(b=>Math.hypot(px-b.x,py-b.y)<b.r*1.3);
+function curva(d,py){const dy=py-d.y0;k.KeyW=dy<-22?1:0;k.KeyS=dy>22?1:0}
+function toque(e){e.preventDefault();tactil=1;iniAudio();
+for(const tq of e.changedTouches){const[px,py]=logico(tq),id=tq.identifier;
+if(e.type=='touchstart'){
+if(estado!='jugando'){tocarMenu(py);continue}
+const b=botEn(px,py);if(b){dedos[id]={b,y0:py};pulsa(b.c);if(b.c=='Escape')suelta(b.c)}}
+else if(e.type=='touchmove'){const d=dedos[id];if(!d)continue;
+if(d.b.c=='ShiftLeft')curva(d,py);
+// deslizar entre ◀ y ▶
+else if(d.b.id=='izq'||d.b.id=='der'){const b=botEn(px,py);if(b&&b!=d.b&&(b.id=='izq'||b.id=='der')){suelta(d.b.c);d.b=b;pulsa(b.c)}}}
+else{const d=dedos[id];if(d){suelta(d.b.c);if(d.b.c=='ShiftLeft')k.KeyW=k.KeyS=0;delete dedos[id]}}}}
+['touchstart','touchmove','touchend','touchcancel'].forEach(n=>c.addEventListener(n,toque,{passive:false}));
+// en menús: tocar una opción la elige; tocar fuera avanza
+function tocarMenu(py){const op=opciones(),L={menu:[300,52],ajustes:[240,56],pausa:[215,58]}[estado];
+if(op&&L){const i=Math.round((py-L[0]+10)/L[1]);if(i<0||i>=op.length)return;sel=i}pulsa('Enter');suelta('Enter')}
+function pantallaCompleta(){if(!tactil)return;try{const d=document.documentElement;(d.requestFullscreen||d.webkitRequestFullscreen).call(d).then(()=>screen.orientation.lock('landscape')).catch(()=>{})}catch(e){}}
+function botones(){if(!tactil||estado!='jugando')return;BOT.forEach(b=>{const on=Object.values(dedos).some(d=>d.b==b);
+x.globalAlpha=on?.55:.3;x.fillStyle='#0a1428';x.beginPath();x.arc(b.x,b.y,b.r,0,7);x.fill();x.globalAlpha=on?.95:.6;
+x.strokeStyle='#fff';x.lineWidth=2.5;x.stroke();x.fillStyle='#fff';x.beginPath();
+if(b.id=='izq'||b.id=='der'){const q=b.id=='izq'?-1:1;x.moveTo(b.x+q*14,b.y);x.lineTo(b.x-q*10,b.y-15);x.lineTo(b.x-q*10,b.y+15);x.fill()}
+else if(b.id=='sal'){x.moveTo(b.x,b.y-18);x.lineTo(b.x+16,b.y+2);x.lineTo(b.x+6,b.y+2);x.lineTo(b.x+6,b.y+16);x.lineTo(b.x-6,b.y+16);x.lineTo(b.x-6,b.y+2);x.lineTo(b.x-16,b.y+2);x.fill()}
+else if(b.id=='pau'){x.fillRect(b.x-8,b.y-9,5,18);x.fillRect(b.x+3,b.y-9,5,18)}
+else{x.save();x.translate(b.x,b.y);ovillo(18,t*(on?8:.5));x.restore();if(on){txt('↑',b.x,b.y-b.r-8,18);txt('↓',b.x,b.y+b.r+18,18)}}});x.globalAlpha=1}
 function elegir(o){const s=o.split(':')[0];
-if(s=='JUGAR'){estado='intro';tIntro=t}
+if(s=='JUGAR'){estado='intro';tIntro=t;pantallaCompleta()}
 else if(s=='CÓMO JUGAR'){volver=estado;estado='como'}
 else if(s=='AJUSTES'){volver=estado;estado='ajustes';sel=0}
 else if(s=='CONTINUAR')estado='jugando';
@@ -312,7 +344,7 @@ else if(ch=='C'){const by=Y+8;x.fillStyle='#c98b4f';x.strokeStyle='#5a3418';x.li
 x.fillRect(X+2,by,T-4,T-8);x.strokeRect(X+2,by,T-4,T-8);x.fillStyle='#e0a868';
 x.beginPath();x.moveTo(X+2,by);x.lineTo(X-4,by-6);x.lineTo(X+10,by-6);x.lineTo(X+15,by);x.moveTo(X+28,by);x.lineTo(X+34,by-6);x.lineTo(X+20,by-6);x.lineTo(X+15,by);x.fill();x.stroke();
 txt('▼',X+15,Y-14+Math.sin(t*4)*4,16)}}
-if(!nivel.menu)niveles[nNivel].tips.forEach(([px,py,s])=>{txt(s,px,py,17,'left');subrayado(px,py+10,x.measureText(s).width)});dibEnem();
+if(!nivel.menu)niveles[nNivel].tips.forEach(([px,py,s])=>{if(tactil)s=s.replace('SHIFT','🧶').replace('MANTÉN ↓','DESLIZA ↓').replace('↑ MIENTRAS','DESLIZA ↑ MIENTRAS').replace('→→','▶▶');txt(s,px,py,17,'left');subrayado(px,py+10,x.measureText(s).width)});dibEnem();
 lines.forEach(hilo);gato(j.x+j.w/2,j.y+j.h);
 parts.forEach(q=>{x.globalAlpha=Math.min(1,q.v*3);x.fillStyle=q.co;x.fillRect(q.x-1.5,q.y-1.5,3,3)});x.globalAlpha=1;x.restore()}
 
@@ -320,29 +352,30 @@ const fmt=s=>Math.floor(s/60)+':'+(s%60).toFixed(2).padStart(5,'0');
 function hud(){txt((nNivel+1)+'/'+niveles.length+'   '+niveles[nNivel].n,24,40,22,'left');
 txt(fmt(reloj),W-24,42,28,'right');txt('CAÍDAS  '+muertes,W-24,64,13,'right','#d5ddef');
 // barra de estambre abajo a la izquierda
-x.save();x.translate(36,H-30);ovillo(5+11*tinta/100,t*.5);x.restore();
-x.fillStyle='rgba(10,18,40,.55)';x.beginPath();x.roundRect(58,H-37,170,14,7);x.fill();
-x.fillStyle=tinta<20?'#ff5a5a':LANA[1];x.beginPath();x.roundRect(58,H-37,Math.max(14,170*tinta/100),14,7);x.fill()}
+const by=tactil?72:H-30;x.save();x.translate(36,by);ovillo(5+11*tinta/100,t*.5);x.restore();
+x.fillStyle='rgba(10,18,40,.55)';x.beginPath();x.roundRect(58,by-7,170,14,7);x.fill();
+x.fillStyle=tinta<20?'#ff5a5a':LANA[1];x.beginPath();x.roundRect(58,by-7,Math.max(14,170*tinta/100),14,7);x.fill()}
 
 const HISTORIA=['La abuela dejó la ventana abierta.','El hilo de la abuela rodó hasta el fin del mundo.','Eres Hilacho, un gato pequeño,','pero tu hilo llega lejos.'];
 function dibujar(){cielos();mundo();const velo=a=>{x.fillStyle=`rgba(8,14,30,${a})`;x.fillRect(0,0,W,H)};
 if(!nivel.menu)hud();
 if(estado=='menu'){titulo(W/2,150,110);txt('UN GATO, SU HILO, NINGÚN PUENTE.',W/2,215,19,'center','#fff',4);opcionesDib(300,52)}
 if(estado=='intro'){velo(.25);titulo(W/2,95,64);HISTORIA.forEach((s,i)=>{x.globalAlpha=Math.max(0,Math.min(1,(t-tIntro)*1.5-i*.9));txt(s,W/2,190+i*56,28,'center','#fff',1)});
-x.globalAlpha=.6+Math.sin(t*4)*.3;txt('ENTER para empezar',W/2,H-24,16,'center','#e9eefb');x.globalAlpha=1}
+x.globalAlpha=.6+Math.sin(t*4)*.3;txt(tactil?'TOCA para empezar':'ENTER para empezar',W/2,H-24,16,'center','#e9eefb');x.globalAlpha=1}
 if(estado=='como'){velo(.45);panel(110,50,740,430);titulo(W/2,130,46,'CÓMO JUGAR');
 [[['A','D'],'CAMINAR'],[['ESPACIO'],'SALTAR'],[['S'],'CAER RÁPIDO'],[['→→','←←'],'DASH']].forEach(([ks,s],i)=>{let px=170;ks.forEach(q=>px+=tecla2(px,200+i*60,q)+8);txt(s,290,201+i*60,18,'left','#c3cde4')});
 [[['SHIFT'],'LANZAR HILO'],[['↑','↓'],'SUBIR / BAJAR HILO'],[['R'],'REINTENTAR'],[['ESC'],'PAUSA']].forEach(([ks,s],i)=>{let px=500;ks.forEach(q=>px+=tecla2(px,200+i*60,q)+8);txt(s,620,201+i*60,18,'left','#c3cde4')});
-txt('LLEGA A LA CAJA · ENREDA RATONES Y POLILLAS CON HILO',W/2,450,16,'center','#fff',2)}
+txt(tactil?'CELULAR: ◀ ▶ CAMINAR · ⤒ SALTAR · 🧶 HILO (DESLIZA ↑↓) · ▶▶ DASH':'LLEGA A LA CAJA · ENREDA RATONES Y POLILLAS CON HILO',W/2,450,tactil?14:16,'center','#fff',tactil?1:2)}
 if(estado=='ajustes'){velo(.45);panel(230,80,500,380);titulo(W/2,160,50,'AJUSTES');opcionesDib(240,56)}
 if(estado=='pausa'){velo(.45);panel(230,40,500,460);titulo(W/2,115,54,'PAUSA');txt(niveles[nNivel].n+'   ·   '+fmt(reloj),W/2,150,16,'center','#a9b6d3');opcionesDib(215,58)}
 if(estado=='ganado'){const s=Math.min(1,(1.8-trans)*5);x.save();x.translate(W/2,H/2-40);x.scale(s,s);titulo(0,0,60,'¡NIVEL COMPLETADO!');x.restore()}
 if(estado=='fin'){velo(.45);panel(230,90,500,360);titulo(W/2,180,60,'¡LO LOGRASTE!');
 txt('TIEMPO  '+fmt(reloj),W/2,260,28);txt('CAÍDAS  '+muertes,W/2,305,20,'center','#c3cde4');
-x.globalAlpha=.6+Math.sin(t*4)*.3;txt('ENTER para volver al menú',W/2,400,16,'center','#e9eefb');x.globalAlpha=1}}
+x.globalAlpha=.6+Math.sin(t*4)*.3;txt(tactil?'TOCA para volver al menú':'ENTER para volver al menú',W/2,400,16,'center','#e9eefb');x.globalAlpha=1}
+botones();if(vertical()){velo(.85);txt('↻',W/2,H/2-30,90);txt('GIRA TU CELULAR',W/2,H/2+60,40);txt('Hilacho se juega en horizontal',W/2,H/2+100,20,'center','#c3cde4',1)}}
 
 let acc=0,ult=0;
 function bucle(ms){const s=ms/1000;acc+=Math.min(.25,s-(ult||s));ult=s;
-while(acc>=DT){paso(DT);acc-=DT}dibujar();requestAnimationFrame(bucle)}
+while(acc>=DT){if(!vertical()||estado!='jugando')paso(DT);acc-=DT}dibujar();requestAnimationFrame(bucle)}
 irMenu();requestAnimationFrame(bucle);
 </script></body></html>
