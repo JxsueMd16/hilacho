@@ -324,10 +324,10 @@ x.save();x.translate(36,H-30);ovillo(5+11*tinta/100,t*.5);x.restore();
 x.fillStyle='rgba(10,18,40,.55)';x.beginPath();x.roundRect(58,H-37,170,14,7);x.fill();
 x.fillStyle=tinta<20?'#ff5a5a':LANA[1];x.beginPath();x.roundRect(58,H-37,Math.max(14,170*tinta/100),14,7);x.fill()}
 
-const HISTORIA=['La abuela dejó la ventana abierta.','El ovillo rodó hasta el fin del mundo.','Eres Hilacho, un gato pequeño,','pero tu hilo llega lejos.'];
+const HISTORIA=['La abuela dejó la ventana abierta.','El hilo de la abuela rodó hasta el fin del mundo.','Eres Hilacho, un gato pequeño,','pero tu hilo llega lejos.'];
 function dibujar(){cielos();mundo();const velo=a=>{x.fillStyle=`rgba(8,14,30,${a})`;x.fillRect(0,0,W,H)};
 if(!nivel.menu)hud();
-if(estado=='menu'){titulo(W/2,150,110);txt('UN GATO, UN OVILLO, NINGÚN PUENTE.',W/2,215,19,'center','#fff',4);opcionesDib(300,52)}
+if(estado=='menu'){titulo(W/2,150,110);txt('UN GATO, SU HILO, NINGÚN PUENTE.',W/2,215,19,'center','#fff',4);opcionesDib(300,52)}
 if(estado=='intro'){velo(.25);titulo(W/2,95,64);HISTORIA.forEach((s,i)=>{x.globalAlpha=Math.max(0,Math.min(1,(t-tIntro)*1.5-i*.9));txt(s,W/2,190+i*56,28,'center','#fff',1)});
 x.globalAlpha=.6+Math.sin(t*4)*.3;txt('ENTER para empezar',W/2,H-24,16,'center','#e9eefb');x.globalAlpha=1}
 if(estado=='como'){velo(.45);panel(110,50,740,430);titulo(W/2,130,46,'CÓMO JUGAR');

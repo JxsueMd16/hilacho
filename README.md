@@ -2,7 +2,7 @@
 
 Juego de plataformas 2D hecho para el reto **open2 — Build & Pitch**.
 
-Eres Hilacho, un gato pequeño con un ovillo de lana. Lanza hilo que se convierte en
+Eres Hilacho, un gato pequeño con su hilo de lana. Lanza hilo que se convierte en
 plataforma: puentes sobre el agua, rampas para subir muros y arcos que bajan hasta
 repisas lejanas. Enreda ratones, cuídate de las polillas (¡se comen tu hilo!) y llega
 a la caja lo más rápido posible.
