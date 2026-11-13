@@ -14,7 +14,7 @@ addEventListener('resize',ajustar);ajustar();
 const V=n=>Array(n).fill('');
 const MENU=[...V(15),"..................P","################################","################################"];
 const niveles=[
-{n:'EL CHARCO',tips:[[70,300,'MANTÉN SHIFT PARA LANZAR HILO'],[640,330,'EL HILO ENREDA A LOS RATONES']],m:[...V(13),
+{n:'EL CHARCO',tips:[[70,300,'MANTÉN SHIFT PARA LANZAR HILO'],[560,330,'EL HILO ENREDA A LOS RATONES']],m:[...V(13),
 "..P......................r....C",
 "############.........##############",
 "############~~~~~~~~~##############",
@@ -112,12 +112,12 @@ onkeyup=e=>k[e.code]=0;
 
 // ---------- táctil: botones virtuales que simulan teclas ----------
 let tactil='ontouchstart' in window;const dedos={};
-const BOT=[{id:'izq',x:78,y:458,r:44,c:'ArrowLeft'},{id:'der',x:188,y:458,r:44,c:'ArrowRight'},
-{id:'hilo',x:W-200,y:462,r:48,c:'ShiftLeft'},{id:'sal',x:W-82,y:440,r:52,c:'Space'},{id:'pau',x:W/2,y:34,r:24,c:'Escape'}];
+const BOT=[{id:'izq',x:56,y:488,r:34,c:'ArrowLeft'},{id:'der',x:140,y:488,r:34,c:'ArrowRight'},
+{id:'hilo',x:W-142,y:492,r:34,c:'ShiftLeft'},{id:'sal',x:W-56,y:478,r:38,c:'Space'},{id:'pau',x:W/2,y:30,r:17,c:'Escape'}];
 const vertical=()=>tactil&&innerHeight>innerWidth;
 const pulsa=cd=>onkeydown({code:cd,repeat:0,preventDefault(){}}),suelta=cd=>onkeyup({code:cd});
 function logico(tq){const b=c.getBoundingClientRect();return[(tq.clientX-b.left)/b.width*W,(tq.clientY-b.top)/b.height*H]}
-const botEn=(px,py)=>BOT.find(b=>Math.hypot(px-b.x,py-b.y)<b.r*1.3);
+const botEn=(px,py)=>{let m,dm=1e9;BOT.forEach(b=>{const d=Math.hypot(px-b.x,py-b.y)/b.r;if(d<1.7&&d<dm){dm=d;m=b}});return m};
 function curva(d,py){const dy=py-d.y0;k.KeyW=dy<-22?1:0;k.KeyS=dy>22?1:0}
 function toque(e){e.preventDefault();tactil=1;iniAudio();
 for(const tq of e.changedTouches){const[px,py]=logico(tq),id=tq.identifier;
@@ -134,13 +134,13 @@ else{const d=dedos[id];if(d){suelta(d.b.c);if(d.b.c=='ShiftLeft')k.KeyW=k.KeyS=0
 function tocarMenu(py){const op=opciones(),L={menu:[300,52],ajustes:[240,56],pausa:[215,58]}[estado];
 if(op&&L){const i=Math.round((py-L[0]+10)/L[1]);if(i<0||i>=op.length)return;sel=i}pulsa('Enter');suelta('Enter')}
 function pantallaCompleta(){if(!tactil)return;try{const d=document.documentElement;(d.requestFullscreen||d.webkitRequestFullscreen).call(d).then(()=>screen.orientation.lock('landscape')).catch(()=>{})}catch(e){}}
-function botones(){if(!tactil||estado!='jugando')return;BOT.forEach(b=>{const on=Object.values(dedos).some(d=>d.b==b);
-x.globalAlpha=on?.55:.3;x.fillStyle='#0a1428';x.beginPath();x.arc(b.x,b.y,b.r,0,7);x.fill();x.globalAlpha=on?.95:.6;
-x.strokeStyle='#fff';x.lineWidth=2.5;x.stroke();x.fillStyle='#fff';x.beginPath();
-if(b.id=='izq'||b.id=='der'){const q=b.id=='izq'?-1:1;x.moveTo(b.x+q*14,b.y);x.lineTo(b.x-q*10,b.y-15);x.lineTo(b.x-q*10,b.y+15);x.fill()}
-else if(b.id=='sal'){x.moveTo(b.x,b.y-18);x.lineTo(b.x+16,b.y+2);x.lineTo(b.x+6,b.y+2);x.lineTo(b.x+6,b.y+16);x.lineTo(b.x-6,b.y+16);x.lineTo(b.x-6,b.y+2);x.lineTo(b.x-16,b.y+2);x.fill()}
-else if(b.id=='pau'){x.fillRect(b.x-8,b.y-9,5,18);x.fillRect(b.x+3,b.y-9,5,18)}
-else{x.save();x.translate(b.x,b.y);ovillo(18,t*(on?8:.5));x.restore();if(on){txt('↑',b.x,b.y-b.r-8,18);txt('↓',b.x,b.y+b.r+18,18)}}});x.globalAlpha=1}
+function botones(){if(!tactil||estado!='jugando')return;BOT.forEach(b=>{const on=Object.values(dedos).some(d=>d.b==b),r=b.r;
+if(on){x.globalAlpha=.3;x.fillStyle='#fff';x.beginPath();x.arc(b.x,b.y,r,0,7);x.fill()}
+x.globalAlpha=on?.9:.32;x.strokeStyle='#fff';x.lineWidth=1.5;x.beginPath();x.arc(b.x,b.y,r,0,7);x.stroke();x.fillStyle='#fff';x.beginPath();
+if(b.id=='izq'||b.id=='der'){const q=b.id=='izq'?-1:1;x.moveTo(b.x+q*10,b.y);x.lineTo(b.x-q*7,b.y-11);x.lineTo(b.x-q*7,b.y+11);x.fill()}
+else if(b.id=='sal'){x.moveTo(b.x,b.y-13);x.lineTo(b.x+12,b.y+1);x.lineTo(b.x+4,b.y+1);x.lineTo(b.x+4,b.y+11);x.lineTo(b.x-4,b.y+11);x.lineTo(b.x-4,b.y+1);x.lineTo(b.x-12,b.y+1);x.fill()}
+else if(b.id=='pau'){x.fillRect(b.x-6,b.y-7,4,14);x.fillRect(b.x+2,b.y-7,4,14)}
+else{x.save();x.translate(b.x,b.y);ovillo(12,t*(on?8:.5));x.restore();if(on){txt('↑',b.x,b.y-r-8,16);txt('↓',b.x,b.y+r+16,16)}}});x.globalAlpha=1}
 function elegir(o){const s=o.split(':')[0];
 if(s=='JUGAR'){estado='intro';tIntro=t;pantallaCompleta()}
 else if(s=='CÓMO JUGAR'){volver=estado;estado='como'}
