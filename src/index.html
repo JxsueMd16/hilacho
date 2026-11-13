@@ -24,7 +24,7 @@ const niveles=[
 {n:'LOS ESCALONES',tips:[[40,330,'TRES MUROS Y DOS POLILLAS']],m:'41.C/34.11#/29.m4.11#/34.11#*2/24.21#/19.m4.21#/24.21#*2/14.31#*3/..P11.31#/10#4.31#/10#4~31#*3'},
 {n:'EL PUENTE LARGO',tips:[[60,280,'CRUZA Y SUBE SIN PARAR']],m:'47.C/35.16#*3/..P28.r3.16#/10#17.24#/10#17~24#*3'},
 {n:'ZIGZAG',tips:[[40,200,'↓ PARA BAJAR, ↑ PARA SUBIR']],m:'30.m//..P33.C/7#19.15#*4/7#8.5#6.15#/7#8~5#6~15#*3'},
-{n:'TORMENTA DE POLILLAS',tips:[[60,250,'CUATRO POLILLAS HAMBRIENTAS']],m:'19.m16.m/15.m17.m/..P22.r26.C/10#13.5#12.16#/10#13~5#12~16#*3'},
+{n:'TORMENTA DE POLILLAS',tips:[[60,250,'TRES POLILLAS HAMBRIENTAS']],m:'19.m/15.m17.m/..P22.r26.C/10#13.5#12.16#/10#13~5#12~16#*3'},
 {n:'LA ESCALERA ROTA',tips:[[40,330,'TRES PISOS SOBRE EL AGUA']],m:'52.C/44.12#*4/27.m2.26#/30.26#*3/16.10#4.26#*3/..P13.10#4.26#/10#6.10#4.26#/10#6~10#4~26#*3'},
 {n:'EL VALLE',tips:[[40,280,'YA CASI LLEGAS']],m:'30.m//36.r7.C/22.25#*3/..P19.25#/8#6.3#5.25#/8#6~3#5~25#*3'},
 {n:'LA CASA DE LA ABUELA',tips:[[40,280,'¡LLEVA LOS HILOS A CASA!']],m:'68.m//72.r4.C/60.20#*3/..P27.r29.20#/8#6.3#8.10#17.28#/8#6~3#8~10#17~28#*3'}];
@@ -140,7 +140,7 @@ for(let ty=y0;ty<=y1;ty++)for(let tx=x0;tx<=x1;tx++)if(solido(tx,ty)){
 if(ejeY){if(j.vy>0){j.y=ty*T-j.h;j.suelo=j.sueloTile=1}else j.y=ty*T+T;j.vy=0}
 else{if(j.vx>0)j.x=tx*T-j.w;else j.x=tx*T+T;j.vx=0}return}}
 // la meta también cuenta si pasas justo por encima (por ejemplo, caminando sobre un hilo)
-function enMeta(){if(toca('C',2))return 1;j.y+=36;const r=toca('C',2);j.y-=36;return r}
+function enMeta(){for(let d=0;d<=540;d+=30){j.y+=d;const r=toca('C',2);j.y-=d;if(r)return 1}}
 function toca(ch,m){for(let ty=Math.floor((j.y+m)/T);ty<=Math.floor((j.y+j.h-m)/T);ty++)
 for(let tx=Math.floor((j.x+m)/T);tx<=Math.floor((j.x+j.w-m)/T);tx++)if(tile(tx,ty)==ch)return 1}
 
@@ -150,9 +150,10 @@ function crearEnem(){enem=[];if(nivel.menu)return;nivel.m.forEach((f,y)=>[...f].
 if(ch=='r')enem.push({t:'r',x:i*T+4,y:y*T+T-12,w:22,h:12,vx:-40});
 if(ch=='m')enem.push({t:'m',hx:i*T+15,hy:y*T+15,x:-99,y:-99,w:26,h:20,ph:i,cd:0})}))}
 function enemPaso(dt){for(const e of enem){
-if(e.t=='r'){const nx=e.x+e.vx*dt,fx=Math.floor((e.vx>0?nx+e.w:nx)/T);
-if(!solido(fx,Math.floor((e.y+e.h+2)/T))||solido(fx,Math.floor((e.y+6)/T)))e.vx*=-1;else e.x=nx}
-else{e.x=e.hx+Math.sin(t*.9+e.ph)*60-e.w/2;e.y=e.hy+Math.sin(t*2.3+e.ph)*12-e.h/2;e.cd-=dt;
+if(e.t=='r'){const dx=j.x-e.x,caza=Math.abs(dx)<180&&Math.abs(j.y+8-e.y)<40,v=caza?Math.sign(dx)*75:e.vx,nx=e.x+v*dt,fx=Math.floor((v>0?nx+e.w:nx)/T),
+bloq=!solido(fx,Math.floor((e.y+e.h+2)/T))||solido(fx,Math.floor((e.y+6)/T));if(caza)e.vx=Math.sign(dx)*40;if(!bloq)e.x=nx;else if(!caza)e.vx*=-1}
+else{const dx=j.x+12-e.hx,dy=j.y+10-e.hy,d=Math.hypot(dx,dy);if(d<200&&d>1){e.hx+=dx/d*35*dt;e.hy+=dy/d*35*dt}
+e.x=e.hx+Math.sin(t*.9+e.ph)*60-e.w/2;e.y=e.hy+Math.sin(t*2.3+e.ph)*12-e.h/2;e.cd-=dt;
 // la polilla se come el hilo y lo parte en dos
 if(e.cd<=0)for(const l of [...lines])if(l!=trazo&&!l.f){const i=l.p.findIndex(([u,v])=>Math.hypot(u-e.x-e.w/2,v-e.y-e.h/2)<14);
 if(i>=0){const b=l.p.slice(i+1);l.p=l.p.slice(0,i);if(b.length>1)lines.push({...l,p:b,off:0,s:l.s+7});if(l.p.length<2)lines.splice(lines.indexOf(l),1);
@@ -178,8 +179,8 @@ function finTrazo(b){if(trazo.p.length<2)lines.splice(lines.indexOf(trazo),1);tr
 function hiloPaso(dt){const dib=tecla('ShiftLeft','ShiftRight','KeyJ');if(!dib)bloq=0;
 if(dib&&!trazo&&!bloq&&tinta>1){const sx=j.x+j.w/2+j.dir*17,sy=j.y+j.h-12;
 // el hilo hereda parte del movimiento del gato
-trazo={p:[[sx,sy]],tx:sx,ty:sy,vx:7*j.dir+j.vx/120,vy:-3+Math.min(0,j.vy)/120,a:1,v:4,off:0,s:Math.random()*99};lines.push(trazo);
-const act=lines.filter(l=>!l.f);if(act.length>2)act[0].f=1}
+trazo={p:[[sx,sy]],tx:sx,ty:sy,vx:7*j.dir+j.vx/70,vy:-3+j.vy/110,a:1,v:4,off:0,s:Math.random()*99};lines.push(trazo);
+const act=lines.filter(l=>!l.f);if(act.length>3)act[0].f=1}
 if(trazo){if(!dib)return finTrazo(0);
 // en el aire el chorro empuja al gato hacia arriba/atrás
 if(!j.suelo){j.vy-=1100*dt;j.vx-=trazo.vx*12*dt}
@@ -192,9 +193,9 @@ const u=z.p[z.p.length-1];if(Math.hypot(z.tx-u[0],z.ty-u[1])>4)z.p.push([z.tx,z.
 if(!enMenu()&&z.p.length%3==0)mar(PENTA[(z.p.length/3|0)%10],.05);
 if(z.tx<cam||z.tx>cam+W||z.ty<0||z.ty>H){z.p.push([z.tx,z.ty]);return finTrazo(1)}
 // sin estambre: se recicla el hilo más viejo desde su cola
-if(tinta<1.1){const o=lines.find(l=>l!=trazo&&!l.f);if(o){const[a,b]=o.p;o.off+=Math.hypot(b[0]-a[0],b[1]-a[1]);o.p.shift();tinta+=1.1;if(o.p.length<2)o.f=1}}
-if((tinta-=1.1)<=0){tinta=0;z.p.push([z.tx,z.ty]);finTrazo(1)}}
-else if(j.sueloTile)tinta=Math.min(100,tinta+40*dt);
+if(tinta<1.75){const o=lines.find(l=>l!=trazo&&!l.f);if(o){const[a,b]=o.p;o.off+=Math.hypot(b[0]-a[0],b[1]-a[1]);o.p.shift();tinta+=1.75;if(o.p.length<2)o.f=1}}
+if((tinta-=1.75)<=0){tinta=0;z.p.push([z.tx,z.ty]);finTrazo(1)}}
+else if(j.sueloTile)tinta=Math.min(100,tinta+60*dt);
 lines.forEach(l=>{if(l!=trazo&&!l.f&&(l.v-=dt)<=0)l.f=1});
 lines=lines.filter(l=>!l.f||(l.a-=dt*2.5)>0)}
 
@@ -365,7 +366,7 @@ const f=Math.max(0,1-Math.min(u,s<3?3.4-u:9)*4);if(f){x.fillStyle=`rgba(8,14,30,
 
 function dibujar(){cielos();if(estado!='intro')mundo();const velo=a=>{x.fillStyle=`rgba(8,14,30,${a})`;x.fillRect(0,0,W,H)};
 if(!nivel.menu)hud();
-if(estado=='menu'){titulo(W/2,150,110);txt('UN GATO, SU HILO, NINGÚN PUENTE.',W/2,215,19,'center','#fff',4);opcionesDib(300,52)}
+if(estado=='menu'){titulo(W/2,150,110);opcionesDib(300,52)}
 if(estado=='intro'){escenaIntro();x.globalAlpha=.6+Math.sin(t*4)*.3;txt(tactil?'TOCA para jugar':'ENTER para jugar',W-20,H-12,14,'right','#e9eefb');x.globalAlpha=1}
 if(estado=='como'){velo(.45);panel(110,50,740,430);titulo(W/2,130,46,'CÓMO JUGAR');
 [[['A','D'],'CAMINAR'],[['ESPACIO'],'SALTAR'],[['S'],'CAER RÁPIDO'],[['→→','←←'],'DASH']].forEach(([ks,s],i)=>{let px=170;ks.forEach(q=>px+=tecla2(px,200+i*60,q)+8);txt(s,290,201+i*60,18,'left','#2a3150',2,0)});
