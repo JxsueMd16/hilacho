@@ -333,7 +333,7 @@ const by=tactil?72:H-30;x.save();x.translate(36,by);ovillo(5+11*tinta/100,t*.5);
 x.fillStyle='rgba(10,18,40,.55)';x.beginPath();x.roundRect(58,by-7,170,14,7);x.fill();
 x.fillStyle=tinta<20?'#ff5a5a':LANA[1];x.beginPath();x.roundRect(58,by-7,Math.max(14,170*tinta/100),14,7);x.fill()}
 
-const HISTORIA=['La abuela tejía un huipil para la feria del pueblo.','Una noche, las polillas lo deshicieron hilo por hilo.','Hilacho despertó. Le tocaba a él.','Teje puentes con el hilo y llévalo de vuelta a casa.'];
+const HISTORIA=['La abuela tejía un huipil para la feria del pueblo.','Una noche, las polillas se robaron sus hilos.','Hilacho despertó y salió a recuperarlos.','Lanza tu hilo, cruza el valle y tráelos de vuelta.'];
 // ---------- intro animada: 4 viñetas de 3.4 s ----------
 const gatoEn=(px,py,sc,dir=1)=>{const jj=j;j={dir,incl:0,suelo:1,vy:0,vx:0,paso:0};x.save();x.translate(px,py);x.scale(sc,sc);gato(0,0);x.restore();j=jj};
 function escenaIntro(){const tI=t-tIntro,s=Math.min(3,Math.floor(tI/3.4)),u=tI-s*3.4,cx=W/2;
