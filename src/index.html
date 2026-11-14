@@ -24,13 +24,13 @@ const niveles=[
 {n:'LOS ESCALONES',tips:[[40,330,'TRES MUROS Y DOS POLILLAS']],m:'41.C/34.11#/29.m4.11#/34.11#*2/24.21#/19.m4.21#/24.21#/20.r3.21#/14.31#*3/..P11.31#/10#4.31#/10#4~31#*3'},
 {n:'TORMENTA DE POLILLAS',tips:[[60,250,'TRES POLILLAS HAMBRIENTAS']],m:'19.m/15.m17.m38.m/..P22.r19.r39.r3.C/10#13.5#12.16#8.5#8.16#/10#13~5#12~16#8~5#8~16#*3'},
 {n:'LA ESCALERA ROTA',tips:[[40,330,'SUBE TRES PISOS Y BAJA DEL OTRO LADO']],m:'/44.12#*4/27.m2.26#8.5#/30.26#8.5#4.m/30.26#8.5#*2/16.10#4.26#8.5#8.5#*3/..P13.10#4.26#8.5#8.5#12.2^3.r3.C/10#6.10#4.26#8.5#8.5#8.16#/10#6~10#4~26#8~5#8~5#8~16#*3'},
-{n:'LA CASA DE LA ABUELA',tips:[[40,280,'¡LLEVA LOS HILOS A CASA!']],m:'68.m/75.m/64.3^5.r4.C/60.20#*3/..P27.r29.20#/8#6.3#8.10#17.28#/8#6~3#8~10#17~28#*3'}];
+{n:'LA CASA DE LA ABUELA',tips:[[40,280,'¡LLEVA LOS HILOS A CASA!']],m:'68.m/75.m12.m/64.3^5.r10.3^7.C/60.36#*3/..P27.r29.36#/8#6.3#8.10#17.44#/8#6~3#8~10#17~44#*3'}];
 // filas con RLE ('12#' = 12 suelos), '/' separa filas, '*3' repite la fila, arriba se rellena con aire
 const dec=s=>{const r=[];s.split('/').forEach(f=>{const[a,n]=f.split('*'),row=a.replace(/(\d+)(\D)/g,(_,k,ch)=>ch.repeat(k));for(let i=0;i<(n||1);i++)r.push(row)});while(r.length<18)r.unshift('');return r};
 niveles.forEach(l=>l.m=dec(l.m));
 
 let nivel,j,cam=0,estado='menu',t=0,muertes=0,lines=[],trazo=null,bloq=0,tinta=100,reloj=0,shake=0,parts=[],nNivel=0,
-sel=0,volver='menu',trans=0,tIntro=0,ajus={mus:1,son:1,sac:1},fake={};
+sel=0,volver='menu',trans=0,tIntro=0,tFin=0,ajus={mus:1,son:1,sac:1},fake={};
 let ultToque={d:0,t:0};const k={},teclaSalto=['ArrowUp','KeyW','Space'];
 const enMenu=()=>nivel.menu&&estado!='jugando';
 const tecla=(...a)=>a.some(n=>(enMenu()?fake:k)[n]);
@@ -206,7 +206,7 @@ if(Math.abs(ang)>.873){j.vx+=Math.sign(ang)*2200*DT;j.incl=0}else{j.suelo=1;j.in
 
 // ---------- paso de simulación ----------
 function paso(dt){t+=dt;shake*=.88;parts=parts.filter(q=>(q.vy+=600*dt,q.x+=q.vx*dt,q.y+=q.vy*dt,q.v-=dt)>0);
-if(estado=='ganado'&&(trans-=dt)<=0){if(nNivel+1<niveles.length){cargar(nNivel+1);estado='jugando'}else{estado='fin';fanfarria()}}
+if(estado=='ganado'&&(trans-=dt)<=0){if(nNivel+1<niveles.length){cargar(nNivel+1);estado='jugando'}else{estado='fin';tFin=t;fanfarria()}}
 if(enMenu())fake.ShiftLeft=t%3.2<.9;
 if(estado!='jugando'&&!enMenu())return;
 if(estado=='jugando')reloj+=dt;hiloPaso(dt);if(estado=='jugando')enemPaso(dt);if(estado!='jugando'&&!enMenu())return;
@@ -386,8 +386,8 @@ x.fillStyle='#fbeedd';x.beginPath();x.roundRect(130,428,700,70,14);x.fill();x.se
 txt(HISTORIA[s].slice(0,u*30|0),cx,472,24,'center','#1d2440',1,0);
 const f=Math.max(0,1-Math.min(u,s<3?3.4-u:9)*4);if(f){x.fillStyle=`rgba(8,14,30,${f})`;x.fillRect(0,0,W,H)}}
 
-function dibujar(){cielos();if(estado!='intro')mundo();const velo=a=>{x.fillStyle=`rgba(8,14,30,${a})`;x.fillRect(0,0,W,H)};
-if(!nivel.menu)hud();
+function dibujar(){const fin=estado=='fin';cielos();if(estado!='intro'&&!fin)mundo();const velo=a=>{x.fillStyle=`rgba(8,14,30,${a})`;x.fillRect(0,0,W,H)};
+if(!nivel.menu&&!fin)hud();
 if(estado=='menu'){titulo(W/2,150,110);opcionesDib(300,52)}
 if(estado=='intro'){escenaIntro();x.globalAlpha=.6+Math.sin(t*4)*.3;txt(tactil?'TOCA para jugar':'ENTER para jugar',W-20,H-12,14,'right','#e9eefb');x.globalAlpha=1}
 if(estado=='como'){velo(.45);panel(110,50,740,430);titulo(W/2,130,46,'CÓMO JUGAR');
@@ -397,9 +397,16 @@ txt(tactil?'CELULAR: ◀ ▶ CAMINAR · ⤒ SALTAR · 🧶 HILO (DESLIZA ↑↓)
 if(estado=='ajustes'){velo(.45);panel(230,80,500,380);titulo(W/2,160,50,'AJUSTES');opcionesDib(240,56,1)}
 if(estado=='pausa'){velo(.45);panel(230,40,500,460);titulo(W/2,115,54,'PAUSA');txt(niveles[nNivel].n+'   ·   '+fmt(reloj),W/2,152,16,'center','#7a7f99',2,0);opcionesDib(215,58,1)}
 if(estado=='ganado'){const s=Math.min(1,(1.8-trans)*5);x.save();x.translate(W/2,H/2-40);x.scale(s,s);titulo(0,0,60,'¡NIVEL COMPLETADO!');x.restore()}
-if(estado=='fin'){velo(.45);panel(230,90,500,360);titulo(W/2,180,60,'¡LO LOGRASTE!');
-txt('TIEMPO  '+fmt(reloj),W/2,262,30,'center','#1d2440',2,0);txt('CAÍDAS  '+muertes,W/2,305,20,'center','#7a7f99',2,0);
-x.globalAlpha=.6+Math.sin(t*4)*.3;txt(tactil?'TOCA para volver al menú':'ENTER para volver al menú',W/2,400,16,'center','#b83a5e',2,0);x.globalAlpha=1}
+// final: Hilacho llega con el ovillo a casa de la abuela
+if(fin){const u=t-tFin,cx=Math.min(600,150+u*150);x.fillStyle='#13233f';x.fillRect(0,440,W,100);
+x.fillStyle='#b5523f';x.fillRect(640,290,250,150);x.fillStyle='#7d3527';x.fillRect(625,276,280,18);
+x.fillStyle='#2f4f8a';x.beginPath();x.moveTo(700,440);x.lineTo(710,385);x.lineTo(750,385);x.lineTo(760,440);x.fill();
+LANA.forEach((c,i)=>{x.fillStyle=c;x.fillRect(706,350+i*7,48,7)});x.fillStyle='#c58c5c';x.beginPath();x.arc(730,334,15,0,7);x.fill();
+x.fillStyle='#e6e1e8';x.beginPath();x.arc(730,322,13,Math.PI,0);x.fill();
+gatoEn(cx,440,2.2);x.save();x.translate(cx+42,412);ovillo(9,u*8*(cx<600));x.restore();
+if(u>3){x.globalAlpha=1-(u-3)%1.5/1.5;txt('♥',665,380-(u-3)%1.5*40,28,'center',LANA[1],0,0);x.globalAlpha=1}
+titulo(W/2,90,60,'¡LO LOGRASTE!');txt('TIEMPO  '+fmt(reloj)+'    CAÍDAS  '+muertes,W/2,150,22);
+x.globalAlpha=.6+Math.sin(t*4)*.3;txt(tactil?'TOCA para volver al menú':'ENTER para volver al menú',W/2,H-24,16);x.globalAlpha=1}
 botones();if(vertical()){velo(.85);txt('↻',W/2,H/2-30,90);txt('GIRA TU CELULAR',W/2,H/2+60,40);txt('Hilacho se juega en horizontal',W/2,H/2+100,20,'center','#c3cde4',1)}}
 
 let acc=0,ult=0;
