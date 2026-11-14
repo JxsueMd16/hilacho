@@ -255,12 +255,9 @@ function capaMedia(){const k=.3,th=tema();x.globalAlpha=.72;
 if(th==0){// campo: cerros con cipreses
 const yc=q=>438+Math.sin((q+cam*k)*.009)*24;x.fillStyle='#22335e';x.beginPath();x.moveTo(0,H);for(let q=0;q<=W;q+=16)x.lineTo(q,yc(q));x.lineTo(W,H);x.fill();
 x.fillStyle='#16244a';rep(o=>{for(let i=0;i<4;i++){const q=o+i*95+rnd(i)*40;x.beginPath();x.ellipse(q,yc(q)-16,7,20,0,0,7);x.fill()}},k,380)}
-else if(th==1)// Antigua: casitas de colores y el Arco de Santa Catalina
-rep(o=>{let q=o;for(let i=0;i<9;i++){const w=46+rnd(i+1)*34,h=45+rnd(i+5)*45;x.fillStyle=CASA[i%5];x.fillRect(q,440-h,w,h+100);
-x.fillStyle='#7d3527';x.fillRect(q-3,434-h,w+6,7);x.fillStyle='rgba(15,20,45,.4)';x.fillRect(q+w/2-6,422,12,18);q+=w;
-if(i==3){x.fillStyle='#e0a93a';x.fillRect(q,300,170,240);x.fillRect(q+68,282,34,20);x.beginPath();x.arc(q+85,282,17,Math.PI,0);x.fill();
-x.fillStyle=cielo;x.beginPath();x.moveTo(q+45,540);x.lineTo(q+45,400);x.arc(q+85,400,40,Math.PI,0);x.lineTo(q+125,540);x.fill();
-x.fillStyle='#fff3e0';x.beginPath();x.arc(q+85,340,10,0,7);x.fill();q+=170}}},k,1300);
+else if(th==1)// Antigua: casitas de colores
+rep(o=>{let q=o;for(let i=0;q<o+600;i++){const w=46+rnd(i+1)*34,h=45+rnd(i+5)*45;x.fillStyle=CASA[i%5];x.fillRect(q,440-h,w,h+100);
+x.fillStyle='#7d3527';x.fillRect(q-3,434-h,w+6,7);x.fillStyle='rgba(15,20,45,.4)';x.fillRect(q+w/2-6,422,12,18);q+=w}},k,600);
 else{// Atitlán: lago con reflejos y barriletes
 x.fillStyle='#2f5b92';x.fillRect(0,438,W,110);x.fillStyle='rgba(255,215,160,.35)';
 for(let i=0;i<14;i++)x.fillRect(((i*137-cam*k+t*12)%W+W)%W,446+i*13%80,26+i%3*10,2);
