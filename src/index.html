@@ -19,12 +19,12 @@ const niveles=[
 {n:'TODO JUNTO',tips:[[70,300,'SALTA DESDE EL HILO · →→ PARA DASH']],m:'42.m//50.C/32.24#*3/..P23.r.4^24#/12#9.35#/12#9~35#*3'},
 {n:'LAS ISLAS',tips:[[60,280,'DOSIFICA ↓ PARA CAER EN ISLAS CHICAS']],m:'29.m/..P30.3^2.r7.C/8#6.3#6.3#7.18#/8#6~3#6~3#7~18#*3'},
 {n:'LA RATONERA',tips:[[70,300,'CUATRO RATONES, TRES CHARCOS']],m:'..P14.r5.r10.r.^^.r17.C/10#6.10#6.10#6.12#/10#6~10#6~10#6~12#*3'},
-{n:'LAS POLILLAS',tips:[[70,250,'UN POCO DE ↑ PARA LLEGAR MÁS LEJOS']],m:'13.m6.m6.m/..P24.2^9.C/10#17.14#/10#17~14#*3'},
+{n:'LAS POLILLAS',tips:[[70,250,'UN POCO DE ↑ PARA LLEGAR MÁS LEJOS']],m:'13.m6.m6.m17.m/..P24.2^26.r4.C/10#17.14#8.14#/10#17~14#8~14#*3'},
 {n:'EL POZO',tips:[[230,60,'TRES BAJADAS, NINGUNA RED']],m:'..P/6#*4/6#8.5#/6#8.5#5.m/6#8.5#/6#8.5#10.r/6#8.5#8.5#*3/6#8.5#8.5#12.r2.C/6#8.5#8.5#8.11#/6#8~5#8~5#8~11#*2'},
 {n:'LOS ESCALONES',tips:[[40,330,'TRES MUROS Y DOS POLILLAS']],m:'41.C/34.11#/29.m4.11#/34.11#*2/24.21#/19.m4.21#/24.21#/20.r3.21#/14.31#*3/..P11.31#/10#4.31#/10#4~31#*3'},
 {n:'TORMENTA DE POLILLAS',tips:[[60,250,'TRES POLILLAS HAMBRIENTAS']],m:'19.m/15.m17.m/..P22.r19.r6.C/10#13.5#12.16#/10#13~5#12~16#*3'},
 {n:'LA ESCALERA ROTA',tips:[[40,330,'TRES PISOS SOBRE EL AGUA']],m:'52.C/44.12#*4/27.m2.26#/30.26#*3/16.10#4.26#*3/..P13.10#4.26#/10#6.10#4.26#/10#6~10#4~26#*3'},
-{n:'EL VALLE',tips:[[40,280,'YA CASI LLEGAS']],m:'30.m//30.3^3.r7.C/22.25#*3/..P19.25#/8#6.3#5.25#/8#6~3#5~25#*3'},
+{n:'EL CARACOL',tips:[[840,130,'SUBE EN ZIGZAG: ← Y →']],m:'20.C/12.13#*2/32.m/15.r/6.22#*2//..P28.2^/40#*4'},
 {n:'LA CASA DE LA ABUELA',tips:[[40,280,'¡LLEVA LOS HILOS A CASA!']],m:'68.m/75.m/64.3^5.r4.C/60.20#*3/..P27.r29.20#/8#6.3#8.10#17.28#/8#6~3#8~10#17~28#*3'}];
 // filas con RLE ('12#' = 12 suelos), '/' separa filas, '*3' repite la fila, arriba se rellena con aire
 const dec=s=>{const r=[];s.split('/').forEach(f=>{const[a,n]=f.split('*'),row=a.replace(/(\d+)(\D)/g,(_,k,ch)=>ch.repeat(k));for(let i=0;i<(n||1);i++)r.push(row)});while(r.length<18)r.unshift('');return r};
@@ -258,12 +258,9 @@ x.fillStyle='#16244a';rep(o=>{for(let i=0;i<4;i++){const q=o+i*95+rnd(i)*40;x.be
 else if(th==1)// Antigua: casitas de colores
 rep(o=>{let q=o;for(let i=0;q<o+600;i++){const w=46+rnd(i+1)*34,h=45+rnd(i+5)*45;x.fillStyle=CASA[i%5];x.fillRect(q,440-h,w,h+100);
 x.fillStyle='#7d3527';x.fillRect(q-3,434-h,w+6,7);x.fillStyle='rgba(15,20,45,.4)';x.fillRect(q+w/2-6,422,12,18);q+=w}},k,600);
-else{// Atitlán: lago con reflejos y barriletes
+else{// Atitlán: lago con reflejos
 x.fillStyle='#2f5b92';x.fillRect(0,438,W,110);x.fillStyle='rgba(255,215,160,.35)';
-for(let i=0;i<14;i++)x.fillRect(((i*137-cam*k+t*12)%W+W)%W,446+i*13%80,26+i%3*10,2);
-rep(o=>{const bx=o+180,by=110+Math.sin(t+o)*8;x.save();x.translate(bx,by);x.rotate(Math.sin(t*.8)*.15);
-for(let i=0;i<8;i++){x.fillStyle=[...LANA,...CASA][i];x.beginPath();x.moveTo(0,0);x.arc(0,0,30,i*.785,i*.785+.8);x.fill()}
-x.strokeStyle='#16213a';x.lineWidth=2;x.beginPath();x.arc(0,0,30,0,7);x.moveTo(0,30);for(let q=1;q<6;q++)x.lineTo(Math.sin(t*3+q)*8,30+q*14);x.stroke();x.restore()},.15,640)}x.globalAlpha=1}
+for(let i=0;i<14;i++)x.fillRect(((i*137-cam*k+t*12)%W+W)%W,446+i*13%80,26+i%3*10,2);}x.globalAlpha=1}
 
 function cielos(){x.fillStyle=cielo;x.fillRect(0,0,W,H);
 x.fillStyle='rgba(255,220,150,.35)';x.beginPath();x.arc(W*.72-cam*.05,H*.6,72,0,7);x.fill();
