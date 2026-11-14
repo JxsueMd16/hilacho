@@ -23,8 +23,7 @@ const niveles=[
 {n:'EL POZO',tips:[[230,60,'TRES BAJADAS, NINGUNA RED']],m:'..P/6#*4/6#8.5#/6#8.5#5.m/6#8.5#/6#8.5#10.r/6#8.5#8.5#*3/6#8.5#8.5#12.r2.C/6#8.5#8.5#8.11#/6#8~5#8~5#8~11#*2'},
 {n:'LOS ESCALONES',tips:[[40,330,'TRES MUROS Y DOS POLILLAS']],m:'41.C/34.11#/29.m4.11#/34.11#*2/24.21#/19.m4.21#/24.21#/20.r3.21#/14.31#*3/..P11.31#/10#4.31#/10#4~31#*3'},
 {n:'TORMENTA DE POLILLAS',tips:[[60,250,'TRES POLILLAS HAMBRIENTAS']],m:'19.m/15.m17.m38.m/..P22.r19.r39.r3.C/10#13.5#12.16#8.5#8.16#/10#13~5#12~16#8~5#8~16#*3'},
-{n:'LA ESCALERA ROTA',tips:[[40,330,'TRES PISOS SOBRE EL AGUA']],m:'52.C/44.12#*4/27.m2.26#/30.26#*3/16.10#4.26#*3/..P13.10#4.26#/10#6.10#4.26#/10#6~10#4~26#*3'},
-{n:'EL CARACOL',tips:[[840,130,'SUBE EN ZIGZAG: ← Y →']],m:'20.C/12.13#*2/32.m/15.r/6.22#*2//..P28.2^/40#*4'},
+{n:'LA ESCALERA ROTA',tips:[[40,330,'SUBE TRES PISOS Y BAJA DEL OTRO LADO']],m:'/44.12#*4/27.m2.26#8.5#/30.26#8.5#4.m/30.26#8.5#*2/16.10#4.26#8.5#8.5#*3/..P13.10#4.26#8.5#8.5#12.2^3.r3.C/10#6.10#4.26#8.5#8.5#8.16#/10#6~10#4~26#8~5#8~5#8~16#*3'},
 {n:'LA CASA DE LA ABUELA',tips:[[40,280,'¡LLEVA LOS HILOS A CASA!']],m:'68.m/75.m/64.3^5.r4.C/60.20#*3/..P27.r29.20#/8#6.3#8.10#17.28#/8#6~3#8~10#17~28#*3'}];
 // filas con RLE ('12#' = 12 suelos), '/' separa filas, '*3' repite la fila, arriba se rellena con aire
 const dec=s=>{const r=[];s.split('/').forEach(f=>{const[a,n]=f.split('*'),row=a.replace(/(\d+)(\D)/g,(_,k,ch)=>ch.repeat(k));for(let i=0;i<(n||1);i++)r.push(row)});while(r.length<18)r.unshift('');return r};
